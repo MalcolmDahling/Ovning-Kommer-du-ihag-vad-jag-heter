@@ -1,44 +1,45 @@
-let LS = JSON.parse(localStorage.getItem('names'));
+let names = JSON.parse(localStorage.getItem('names'));
 
-if(LS){
-    for(let i = 0; i < LS.length; i++){
-        addName( LS[i], i ); //stored name and index
+function renderArray(){
+    for(let i = 0; i < names.length; i++){
+        addName(names[i], i);
     }
 }
 
+if(names){
+    renderArray();
+}
 else{
-    LS = [];
+    names = [];
 }
 
 
 
-
-
+let id = names.length; //++ makes sure all new buttons gets a new id.
 
 document.getElementById('save').addEventListener('click', function(){
-
-    LS.push(document.getElementById('text').value);
-    addName( LS[LS.length -1], LS.length-1 ); //stored name and index
-
-    localStorage.setItem('names', JSON.stringify(LS));
+    names.push(document.getElementById('text').value);
+    localStorage.setItem('names', JSON.stringify(names));
+    
+    addName(document.getElementById('text').value, id);
+    id++;
 
     document.getElementById('text').value = '';
+
     addEventListeners();
 });
 
 
 
 
-
-
-
-
 function addEventListeners(){
-    for(let i = 0; i < LS.length; i++){
-        document.getElementById(i).addEventListener('click', function(){
-            LS.splice(i, 1);
-            localStorage.setItem('names', JSON.stringify(LS));
-            document.getElementById(i).parentElement.remove();
+    let del = document.getElementsByClassName('delete');
+
+    for(let i = 0; i < del.length; i++){
+        del[i].addEventListener('click', function(){
+            names.splice(this.id, 1);
+            localStorage.setItem('names', JSON.stringify(names));
+            this.parentElement.remove();
         });
     }
 }
@@ -48,8 +49,6 @@ addEventListeners();
 
 
 
-
-
-function addName(name, index){
-    document.body.insertAdjacentHTML('beforeend', '<div>'+name+' <button id="'+index+'">Delete</button> </div>');
+function addName(name, id){
+    document.body.insertAdjacentHTML('beforeend', '<div>'+name+' <button class="delete" id="'+id+'">Delete</button></div>');
 }
