@@ -1,54 +1,71 @@
-let names = JSON.parse(localStorage.getItem('names'));
+let LS = JSON.parse(localStorage.getItem('names'));
+let names = [];
 
-function renderArray(){
-    for(let i = 0; i < names.length; i++){
-        addName(names[i], i);
-    }
-}
-
-if(names){
-    renderArray();
-}
-else{
-    names = [];
+if(LS){
+   names = LS; 
 }
 
 
 
-let id = names.length; //++ makes sure all new buttons gets a new id.
 
+
+function listNames(){
+
+    names.forEach(function(value, index){
+        let name = document.createElement('div');
+        name.innerHTML = '<input type="button" class="delete" value="Delete">';
+        name.appendChild( document.createTextNode(names[index]) );
+        document.getElementById('nameList').append(name);
+    });
+
+}
+
+
+
+
+
+//add new name.
 document.getElementById('save').addEventListener('click', function(){
-    names.push(document.getElementById('text').value);
-    localStorage.setItem('names', JSON.stringify(names));
-    
-    addName(document.getElementById('text').value, id);
-    id++;
+    document.getElementById('nameList').innerHTML = ''; //removes all names.
+    names.push( document.getElementById('text').value );
 
-    document.getElementById('text').value = '';
+    localStorage.setItem( 'names', JSON.stringify(names) );
 
-    addEventListeners();
+    listNames(); //re-adds all names including the new name.
+    addDeleteClickEvent(); //re-adds click events.
+    document.getElementById('text').value = ''; //removes the typed in name.
 });
 
 
 
 
-function addEventListeners(){
-    let del = document.getElementsByClassName('delete');
 
-    for(let i = 0; i < del.length; i++){
-        del[i].addEventListener('click', function(){
-            names.splice(this.id, 1);
-            localStorage.setItem('names', JSON.stringify(names));
-            this.parentElement.remove();
-        });
+function addDeleteClickEvent(){
+    let deleteButtons = document.getElementsByClassName('delete');
+
+    for(let i = 0; i < deleteButtons.length; i++){
+        deleteButtons[i].addEventListener('click', deleteName);
     }
 }
-addEventListeners();
 
 
 
 
 
-function addName(name, id){
-    document.body.insertAdjacentHTML('beforeend', '<div>'+name+' <button class="delete" id="'+id+'">Delete</button></div>');
+function deleteName(){
+    let index = names.indexOf(this.parentNode.textContent); //find index of the name the button shares div with.
+   
+    console.log(this.parentNode.textContent);
+
+    names.splice(index, 1); //removes 1 element at index position.
+    this.parentNode.remove();
+
+    localStorage.setItem( 'names', JSON.stringify(names) );
 }
+
+
+
+
+
+listNames();
+addDeleteClickEvent();
